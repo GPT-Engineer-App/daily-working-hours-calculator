@@ -1,0 +1,53 @@
+import React, { useState } from "react";
+import { Container, VStack, Input, Button, Text, FormControl, FormLabel, useToast } from "@chakra-ui/react";
+
+const Index = () => {
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [hoursWorked, setHoursWorked] = useState(null);
+  const toast = useToast();
+
+  const calculateHours = () => {
+    const start = new Date(`2023-01-01T${startTime}:00`);
+    const end = new Date(`2023-01-01T${endTime}:00`);
+    let diff = (end - start) / (1000 * 60 * 60); // difference in hours
+
+    if (diff < 0) {
+      toast({
+        title: "Error",
+        description: "End time must be after start time",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (diff > 8) {
+      diff -= 0.5; // Deduct 30 minutes
+    }
+
+    setHoursWorked(diff.toFixed(2));
+  };
+
+  return (
+    <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+      <VStack spacing={4} width="100%">
+        <FormControl>
+          <FormLabel htmlFor="start-time">Start Time (HH:mm)</FormLabel>
+          <Input id="start-time" type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+        </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="end-time">End Time (HH:mm)</FormLabel>
+          <Input id="end-time" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+        </FormControl>
+        <Button colorScheme="blue" onClick={calculateHours}>
+          Calculate Hours
+        </Button>
+        {hoursWorked !== null && <Text fontSize="xl">Hours Worked: {hoursWorked}</Text>}
+      </VStack>
+    </Container>
+  );
+};
+
+export default Index;
